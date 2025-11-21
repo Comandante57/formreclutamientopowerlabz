@@ -321,7 +321,7 @@
                 { id: 'training', label: 'EXPERIENCIA DE COMBATE (ENTRENAMIENTO)', icon: 'dumbbell', type: 'select', options: ['Menos de 6 meses', '6 meses', '9 meses', '1 año', '1-3 años', 'Más de 6 años'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA' },
                 { id: 'supplements', label: '¿CONSUMO DE SUPLEMENTOS?', icon: 'pill', type: 'select', options: ['Sí', 'No'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA' },
                 { id: 'supplementsWhich', label: 'ESPECIFICAR ARSENAL', icon: 'list', type: 'text', placeholder: 'PROTEÍNA, CREATINA...', validation: val => val.trim() !== '', error: 'DETALLE REQUERIDO', dependsOn: { id: 'supplements', value: 'Sí' } },
-                { id: 'sponsorship', label: '¿AFILIACIONES PREVIAS?', icon: 'flag', type: 'select', options: ['Sí', 'No'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA' },
+                { id: 'sponsorship', label: '¿TE HAN PATROCINADO ANTES?', icon: 'flag', type: 'select', options: ['Sí', 'No'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA' },
                 { id: 'currentSponsorship', label: '¿AFILIACIÓN ACTIVA?', icon: 'alert-circle', type: 'select', options: ['Sí', 'No'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA', dependsOn: { id: 'sponsorship', value: 'Sí' } }
             ];
 
@@ -491,5 +491,4 @@
         });
     </script>
 </body>
-
 </html>
