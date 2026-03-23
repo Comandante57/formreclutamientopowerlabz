@@ -240,7 +240,7 @@
                 ACCESO <span class="text-neon-red">AUTORIZADO</span>
             </h2>
 
-            <div class="cut-card bg-card-bg p-6 mb-8 border-l-4 border-l-neon-red text-left">
+            <div class="cut-card bg-card-bg p-6 mb-6 border-l-4 border-l-neon-red text-left">
                 <p class="text-gray-400 font-mono text-sm uppercase tracking-widest mb-2">ESTADO DE MISIÓN:</p>
                 <p class="text-xl md:text-2xl font-display uppercase text-white leading-relaxed">
                     Tu primer despliegue de suministros está programado a partir del:
@@ -248,8 +248,27 @@
                 </p>
             </div>
 
+            <!-- CÓDIGO DE DESCUENTO -->
+            <div class="cut-card bg-card-bg p-6 mb-8 border-l-4 border-l-yellow-400 text-left w-full">
+                <p class="text-yellow-400 font-mono text-xs uppercase tracking-widest mb-1 flex items-center gap-2">
+                    <i data-lucide="tag" class="w-4 h-4"></i> TU CÓDIGO DE DESCUENTO POWER LABZ
+                </p>
+                <p class="text-gray-500 text-xs mb-4 font-light">Comparte este código con tu comunidad para que obtengan descuento en tienda.</p>
+
+                <div class="flex items-center gap-3 mb-3">
+                    <div id="discount-code-display" class="flex-1 bg-black border-2 border-yellow-400 p-4 font-mono text-3xl md:text-4xl text-yellow-400 tracking-[0.25em] text-center font-bold">
+                        —
+                    </div>
+                    <button onclick="copyDiscountCode()" class="cyber-btn border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black p-4 transition-all flex-shrink-0" title="Copiar código">
+                        <i data-lucide="copy" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <p id="copy-feedback" class="text-yellow-400 text-xs font-mono text-center transition-opacity duration-300 opacity-0">✓ CÓDIGO COPIADO</p>
+                <p class="text-gray-600 text-xs font-mono mt-2 uppercase tracking-widest text-center">Válido en powerlabz.com · El % de descuento es asignado por el equipo</p>
+            </div>
+
             <p class="text-gray-500 text-sm mb-8 max-w-md">
-                Confirma tu posición táctica enviando tus datos al comando central vía WhatsApp.
+                Confirma tu posición táctica enviando tus datos al comando central vía WhatsApp. Te llegará tu código oficial con todos tus datos registrados.
             </p>
 
             <button id="whatsapp-btn" class="cyber-btn bg-[#25D366] text-black hover:bg-white px-8 py-4 text-xl font-display uppercase tracking-widest w-full flex items-center justify-center gap-3">
@@ -428,19 +447,31 @@
             }
 
             // --- 6. Evaluación Final ---
+            function generateDiscountCode(name) {
+                // Tomar el primer nombre, solo letras, máx 8 chars, mayúsculas
+                const firstName = name.trim().split(' ')[0]
+                    .toUpperCase()
+                    .replace(/[^A-ZÁÉÍÓÚÑ]/g, '')
+                    .substring(0, 8);
+                // Número fijo representativo del programa
+                return firstName + '15';
+            }
+
             function evaluateAndTransition() {
                 let isAccepted = true;
                 const data = state.formData;
 
-                // REGLAS DE RECHAZO (Hardcore Mode)
                 if (parseInt(data.age) < 19) isAccepted = false;
                 if (data.training === 'Menos de 6 meses') isAccepted = false;
                 if (data.supplements === 'No') isAccepted = false;
                 if (data.sponsorship === 'Sí' && data.currentSponsorship === 'Sí') isAccepted = false;
 
                 if (isAccepted) {
+                    state.discountCode = generateDiscountCode(data.name);
                     navigateTo('final-screen');
                     document.getElementById('current-date-span').textContent = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+                    document.getElementById('discount-code-display').textContent = state.discountCode;
+                    lucide.createIcons();
                 } else {
                     navigateTo('rejection-screen');
                 }
@@ -449,15 +480,17 @@
             // --- 7. WhatsApp ---
             whatsappBtn.addEventListener('click', () => {
                 const d = state.formData;
-                let msg = `🛑 *NUEVO RECLUTA: PROTOCOLO POWER LABZ* 🛑\n\n`;
-                msg += `👤 *AGENTE:* ${d.name}\n`;
+                const code = state.discountCode || '—';
+                let msg = `🛑 *NUEVO RECLUTA POWER LABZ* 🛑\n\n`;
+                msg += `👤 *NOMBRE:* ${d.name}\n`;
                 msg += `🎂 *EDAD:* ${d.age}\n`;
-                msg += `📍 *BASE:* ${d.city}\n`;
-                msg += `📱 *RED:* ${d.instagram}\n`;
-                msg += `🏋️ *EXP:* ${d.training}\n`;
-                msg += `💊 *SUPS:* ${d.supplements} (${d.supplementsWhich || 'N/A'})\n`;
-                msg += `🤝 *PATROCINIOS:* ${d.sponsorship} (Activo: ${d.currentSponsorship || 'N/A'})\n\n`;
-                msg += `🚀 *SOLICITANDO ACTIVACIÓN DE SUMINISTROS.*`;
+                msg += `📍 *CIUDAD:* ${d.city}\n`;
+                msg += `📱 *INSTAGRAM:* ${d.instagram}\n`;
+                msg += `🏋️ *EXPERIENCIA:* ${d.training}\n`;
+                msg += `💊 *SUPLEMENTOS:* ${d.supplements} (${d.supplementsWhich || 'N/A'})\n`;
+                msg += `🤝 *PATROCINADO ANTES:* ${d.sponsorship} (Activo: ${d.currentSponsorship || 'N/A'})\n\n`;
+                msg += `🏷️ *CÓDIGO DE DESCUENTO ASIGNADO:* ${code}\n\n`;
+                msg += `📋 *Registrar en sistema y asignar % de descuento.*`;
 
                 window.open(`https://wa.me/${mainWhatsAppNumber}?text=${encodeURIComponent(msg)}`, '_blank');
             });
@@ -489,6 +522,27 @@
                 if (e.key === 'Enter') validateAndAdvance();
             });
         });
+    </script>
+    <script>
+        function copyDiscountCode() {
+            const code = document.getElementById('discount-code-display').textContent;
+            if (!code || code === '—') return;
+            const feedback = document.getElementById('copy-feedback');
+            navigator.clipboard.writeText(code).then(() => {
+                feedback.style.opacity = '1';
+                setTimeout(() => { feedback.style.opacity = '0'; }, 2000);
+            }).catch(() => {
+                // fallback
+                const el = document.createElement('textarea');
+                el.value = code;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                feedback.style.opacity = '1';
+                setTimeout(() => { feedback.style.opacity = '0'; }, 2000);
+            });
+        }
     </script>
 </body>
 </html>
