@@ -344,7 +344,7 @@
                 { id: 'currentSponsorship', label: '¿AFILIACIÓN ACTIVA?', icon: 'alert-circle', type: 'select', options: ['Sí', 'No'], validation: val => val !== '', error: 'SELECCIÓN REQUERIDA', dependsOn: { id: 'sponsorship', value: 'Sí' } }
             ];
 
-            const mainWhatsAppNumber = '5215572365913';
+            const mainWhatsAppNumber = '5215629554857';
 
             // --- 2. Elementos ---
             const screens = document.querySelectorAll('.screen');
@@ -447,35 +447,12 @@
             }
 
             // --- 6. Evaluación Final ---
-            function generateDiscountCode(name, instagram) {
-                // Fragmento del nombre (primeras 3-4 letras)
-                const namePart = name.trim().split(' ')[0]
-                    .toUpperCase()
-                    .replace(/[^A-ZÁÉÍÓÚÑ]/g, '')
-                    .substring(0, 4);
-
-                // Fragmento del Instagram (sin @, primeras 3 letras)
-                const igPart = instagram.replace(/^@/, '')
-                    .toUpperCase()
-                    .replace(/[^A-Z0-9]/g, '')
-                    .substring(0, 3);
-
-                // Número aleatorio de 2 dígitos
+            function generateDiscountCode(instagram) {
+                // Usuario de Instagram sin @ y en mayúsculas
+                const igUser = instagram.replace(/^@/, '').toUpperCase();
+                // Número simple aleatorio del 10 al 99
                 const randomNum = Math.floor(Math.random() * 90 + 10);
-
-                // Letra aleatoria
-                const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-                const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
-
-                // Combinar en orden aleatorio
-                const parts = [namePart, igPart, String(randomNum), randomLetter];
-                // Mezclar los segmentos aleatoriamente (shuffle)
-                for (let i = parts.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [parts[i], parts[j]] = [parts[j], parts[i]];
-                }
-
-                return parts.join('');
+                return igUser + randomNum;
             }
 
             function evaluateAndTransition() {
@@ -488,7 +465,7 @@
                 if (data.sponsorship === 'Sí' && data.currentSponsorship === 'Sí') isAccepted = false;
 
                 if (isAccepted) {
-                    state.discountCode = generateDiscountCode(data.name, data.instagram);
+                    state.discountCode = generateDiscountCode(data.instagram);
                     navigateTo('final-screen');
                     document.getElementById('current-date-span').textContent = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
                     document.getElementById('discount-code-display').textContent = state.discountCode;
