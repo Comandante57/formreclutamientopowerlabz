@@ -447,14 +447,35 @@
             }
 
             // --- 6. Evaluación Final ---
-            function generateDiscountCode(name) {
-                // Tomar el primer nombre, solo letras, máx 8 chars, mayúsculas
-                const firstName = name.trim().split(' ')[0]
+            function generateDiscountCode(name, instagram) {
+                // Fragmento del nombre (primeras 3-4 letras)
+                const namePart = name.trim().split(' ')[0]
                     .toUpperCase()
                     .replace(/[^A-ZÁÉÍÓÚÑ]/g, '')
-                    .substring(0, 8);
-                // Número fijo representativo del programa
-                return firstName + '15';
+                    .substring(0, 4);
+
+                // Fragmento del Instagram (sin @, primeras 3 letras)
+                const igPart = instagram.replace(/^@/, '')
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, '')
+                    .substring(0, 3);
+
+                // Número aleatorio de 2 dígitos
+                const randomNum = Math.floor(Math.random() * 90 + 10);
+
+                // Letra aleatoria
+                const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+                const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
+
+                // Combinar en orden aleatorio
+                const parts = [namePart, igPart, String(randomNum), randomLetter];
+                // Mezclar los segmentos aleatoriamente (shuffle)
+                for (let i = parts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [parts[i], parts[j]] = [parts[j], parts[i]];
+                }
+
+                return parts.join('');
             }
 
             function evaluateAndTransition() {
@@ -467,7 +488,7 @@
                 if (data.sponsorship === 'Sí' && data.currentSponsorship === 'Sí') isAccepted = false;
 
                 if (isAccepted) {
-                    state.discountCode = generateDiscountCode(data.name);
+                    state.discountCode = generateDiscountCode(data.name, data.instagram);
                     navigateTo('final-screen');
                     document.getElementById('current-date-span').textContent = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
                     document.getElementById('discount-code-display').textContent = state.discountCode;
