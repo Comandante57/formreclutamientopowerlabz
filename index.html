@@ -447,12 +447,12 @@
             }
 
             // --- 6. Evaluación Final ---
-            function generateDiscountCode(instagram) {
-                // Usuario de Instagram sin @ y en mayúsculas
-                const igUser = instagram.replace(/^@/, '').toUpperCase();
-                // Número simple aleatorio del 10 al 99
-                const randomNum = Math.floor(Math.random() * 90 + 10);
-                return igUser + randomNum;
+            function generateDiscountCode(name) {
+                // Iniciales del nombre completo en mayúsculas
+                const initials = name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase();
+                // Número aleatorio de 3 dígitos (100-999)
+                const randomNum = Math.floor(Math.random() * 900 + 100);
+                return initials + randomNum;
             }
 
             function evaluateAndTransition() {
@@ -465,7 +465,7 @@
                 if (data.sponsorship === 'Sí' && data.currentSponsorship === 'Sí') isAccepted = false;
 
                 if (isAccepted) {
-                    state.discountCode = generateDiscountCode(data.instagram);
+                    state.discountCode = generateDiscountCode(data.name);
                     navigateTo('final-screen');
                     document.getElementById('current-date-span').textContent = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
                     document.getElementById('discount-code-display').textContent = state.discountCode;
